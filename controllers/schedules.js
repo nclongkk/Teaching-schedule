@@ -125,3 +125,27 @@ exports.updateSchedule = async (req, res) => {
     return res.status(httpStatus.BAD_REQUEST).json({ error: error.message });
   }
 };
+
+exports.getListSchedulesByTeacherId = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const teacher = await User.findOne({ where: { id } });
+    const schedules = await Schedule.findAll({
+      where: { teacherId: id },
+      include: [
+        {
+          model: User,
+          as: "teacher",
+          attributes: ["name", "email"],
+        },
+      ],
+    });
+    return res.status(httpStatus.OK).json({
+      message: "List schedules",
+      schedules,
+      teacher,
+    });
+  } catch (error) {
+    return res.status(httpStatus.BAD_REQUEST).json({ error: error.message });
+  }
+};
