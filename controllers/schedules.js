@@ -20,21 +20,19 @@ const verifyAdmin = async (req, res) => {
 exports.addSchedule = async (req, res) => {
   try {
     await verifyAdmin(req, res);
-    const { name, teacherId, from, to, day } = req.body;
-    if (!validateTime(from) || !validateTime(to)) {
-      throw new Error("Time is invalid, please format like hh:mm");
-    }
-
-    const newSchedule = await Schedule.create({
-      name,
-      teacherId,
-      from,
-      to,
-      day,
+    const schedules = req.body.schedules;
+    console.log(schedules);
+    schedules.forEach((schedule) => {
+      if (!validateTime(schedule.from) || !validateTime(schedule.to)) {
+        throw new Error("Time is invalid, please format like hh:mm");
+      }
     });
+
+    //await bulk create
+    const result = await Schedule.bulkCreate(schedules);
     return res.status(httpStatus.CREATED).json({
       message: "Schedule added successfully",
-      data: newSchedule,
+      data: result,
     });
   } catch (error) {
     console.log(error);
