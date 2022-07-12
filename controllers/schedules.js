@@ -103,3 +103,25 @@ exports.removeSchedule = async (req, res) => {
     return res.status(httpStatus.BAD_REQUEST).json({ error: error.message });
   }
 };
+
+exports.updateSchedule = async (req, res) => {
+  try {
+    await verifyAdmin(req, res);
+    const { id } = req.params;
+    const schedule = await Schedule.findOne({ where: { id } });
+    if (!schedule) {
+      throw new Error("Schedule not found");
+    }
+    const { from, to } = req.body;
+    if (!validateTime(from) || !validateTime(to)) {
+      throw new Error("Time is invalid, please format like hh:mm");
+    }
+
+    await schedule.update(req.body);
+    return res.status(httpStatus.OK).json({
+      message: "Schedule updated successfully",
+    });
+  } catch (error) {
+    return res.status(httpStatus.BAD_REQUEST).json({ error: error.message });
+  }
+};
