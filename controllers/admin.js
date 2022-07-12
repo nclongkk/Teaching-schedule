@@ -19,7 +19,7 @@ const verifyAdmin = async (req, res) => {
 exports.addTeacher = async (req, res) => {
   try {
     await verifyAdmin(req, res);
-    const { email, name } = req.body;
+    const { email, name, avatar } = req.body;
     const user = await User.findOne({ where: { email } });
     if (user) {
       throw new Error("teacher already exists");
@@ -27,6 +27,7 @@ exports.addTeacher = async (req, res) => {
     const newUser = await User.create({
       name,
       email,
+      avatar,
       password: "123456",
       role: ROLES.TEACHER,
     });
